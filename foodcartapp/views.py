@@ -1,8 +1,8 @@
-import json
 import phonenumbers
 
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework.decorators import api_view
 
 
 from .models import Product, Order, OrderItems
@@ -60,8 +60,9 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
-    order = json.loads(request.body.decode())
+    order = request.data
     phonenumber = phonenumbers.parse(order.get('phonenumber'), 'RU')
     if phonenumbers.is_valid_number(phonenumber):
         valid_phonenumber = phonenumbers.format_number(
@@ -76,7 +77,6 @@ def register_order(request):
     )
     all_products = Product.objects.prefetch_related()
     for product in order.get('products'):
-        print(product)
         OrderItems.objects.create(
             order=created_order,
             product=all_products.get(id=product.get('product')),
