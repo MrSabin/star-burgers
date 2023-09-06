@@ -2,7 +2,9 @@ import phonenumbers
 
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 from .models import Product, Order, OrderItems
@@ -63,6 +65,10 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order = request.data
+    products = order.get('product')
+    if not products or not isinstance(products, list):
+        content = {'error': 'products key not presented or not list'}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
     phonenumber = phonenumbers.parse(order.get('phonenumber'), 'RU')
     if phonenumbers.is_valid_number(phonenumber):
         valid_phonenumber = phonenumbers.format_number(
