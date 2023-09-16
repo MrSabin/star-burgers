@@ -20,5 +20,5 @@ class OrderSerializer(ModelSerializer):
             'firstname',
             'lastname',
             'phonenumber',
-            'products'
+            'products',
         ]
