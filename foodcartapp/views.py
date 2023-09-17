@@ -1,4 +1,3 @@
-import json
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
@@ -79,5 +78,6 @@ def register_order(request):
             order=created_order,
             product=all_products.get(id=product.get('product').id),
             quantity=product.get('quantity'),
+            price=Product.objects.get(id=product['product'].id).price,
         )
     return Response(serializer.data)
