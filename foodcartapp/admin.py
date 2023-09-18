@@ -1,13 +1,17 @@
 from django.contrib import admin
-from django.shortcuts import reverse
+from django.shortcuts import redirect, reverse
 from django.templatetags.static import static
 from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from .models import Product
-from .models import ProductCategory
-from .models import Restaurant
-from .models import RestaurantMenuItem
-from .models import Order, OrderItems
+from .models import (
+    Product,
+    ProductCategory,
+    Restaurant,
+    RestaurantMenuItem,
+    Order,
+    OrderItems,
+)
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -29,6 +33,16 @@ class OrderAdmin(admin.ModelAdmin):
     ]
 
     inlines = [OrderItemsInline, ]
+
+    def response_post_save_change(self, request, obj):
+        response = super().response_post_save_change(request, obj)
+        if 'next' not in request.GET:
+            return response
+        redirection = request.GET['next']
+        allowed_hosts = request.get_host()
+        if url_has_allowed_host_and_scheme(url=redirection, allowed_hosts=allowed_hosts):
+            return redirect(redirection)
+        return response
 
 
 @admin.register(Restaurant)
@@ -114,7 +128,11 @@ class ProductAdmin(admin.ModelAdmin):
         if not obj.image or not obj.id:
             return 'нет картинки'
         edit_url = reverse('admin:foodcartapp_product_change', args=(obj.id,))
-        return format_html('<a href="{edit_url}"><img src="{src}" style="max-height: 50px;"/></a>', edit_url=edit_url, src=obj.image.url)
+        return format_html(
+            '<a href="{edit_url}"><img src="{src}" style="max-height: 50px;"/></a>',
+            edit_url=edit_url,
+            src=obj.image.url
+            )
     get_image_list_preview.short_description = 'превью'
 
 
