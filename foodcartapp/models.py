@@ -30,16 +30,9 @@ class Restaurant(models.Model):
 
 class OrderQueryset(models.QuerySet):
     def get_order(self):
-        orders = OrderItems.objects.annotate(
-            product_price=F('price') * F('quantity')
-        ).values(
-            'order__id',
-            'order__firstname',
-            'order__lastname',
-            'order__address',
-            'order__phonenumber',
-        ).annotate(order_price=(Sum('product_price')))
-        return orders
+        return self.annotate(
+            order_price=Sum(F('order_items__product__price') * F('order_items__quantity'))
+        )
 
 
 class ProductQuerySet(models.QuerySet):
@@ -140,6 +133,12 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+    ORDER_STATUS_CHOICES = [
+        ('processing', 'В обработке'),
+        ('packing', 'Готовится'),
+        ('delivery', 'Передан в доставку'),
+        ('done', 'Завершен'),
+    ]
     firstname = models.CharField(
         verbose_name='имя',
         max_length=50,
@@ -158,6 +157,13 @@ class Order(models.Model):
         verbose_name='адрес',
         max_length=200,
         db_index=True,
+    )
+    status = models.CharField(
+        verbose_name='статус',
+        max_length=50,
+        choices=ORDER_STATUS_CHOICES,
+        default='В обработке',
+        db_index=True
     )
     objects = OrderQueryset.as_manager()
 
