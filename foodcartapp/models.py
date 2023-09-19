@@ -165,6 +165,10 @@ class Order(models.Model):
         default='В обработке',
         db_index=True
     )
+    comment = models.TextField(
+        verbose_name='комментарий',
+        blank=True,
+    )
     objects = OrderQueryset.as_manager()
 
     class Meta:
