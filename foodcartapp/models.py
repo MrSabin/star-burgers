@@ -140,6 +140,11 @@ class Order(models.Model):
         ('delivery', 'Передан в доставку'),
         ('done', 'Завершен'),
     ]
+    PAYMENT_CHOICES = [
+        ('unknown', 'Не указан'),
+        ('cash', 'Наличные'),
+        ('card', 'Карта')
+    ]
     firstname = models.CharField(
         verbose_name='имя',
         max_length=50,
@@ -186,6 +191,13 @@ class Order(models.Model):
     comment = models.TextField(
         verbose_name='комментарий',
         blank=True,
+    )
+    payment_method = models.CharField(
+        'способ оплаты',
+        max_length=50,
+        choices=PAYMENT_CHOICES,
+        default='Не указан',
+        db_index=True
     )
     objects = OrderQueryset.as_manager()
 
