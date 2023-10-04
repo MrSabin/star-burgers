@@ -199,6 +199,14 @@ class Order(models.Model):
         default='Не указан',
         db_index=True
     )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        verbose_name='ресторан',
+        related_name='orders',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE
+    )
     objects = OrderQueryset.as_manager()
 
     class Meta:
