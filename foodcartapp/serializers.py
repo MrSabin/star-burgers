@@ -14,6 +14,9 @@ class OrderSerializer(ModelSerializer):
     id = IntegerField(read_only=True)
     products = OrderitemsSerializer(many=True, allow_empty=False)
 
+    def create(self, validated_data):
+        return Order(**validated_data)
+
     class Meta:
         model = Order
         fields = [

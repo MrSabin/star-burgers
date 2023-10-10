@@ -61,10 +61,7 @@ class ProductCategory(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(
-        'название',
-        max_length=50
-    )
+    name = models.CharField('название', max_length=50)
     category = models.ForeignKey(
         ProductCategory,
         verbose_name='категория',
