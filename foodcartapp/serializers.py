@@ -1,4 +1,4 @@
-from rest_framework.serializers import IntegerField, ModelSerializer
+from rest_framework.serializers import ModelSerializer
 from .models import Order, OrderItems, Product
 
 
@@ -11,7 +11,6 @@ class OrderitemsSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    id = IntegerField(read_only=True)
     products = OrderitemsSerializer(many=True, allow_empty=False)
 
     def create(self, validated_data):
