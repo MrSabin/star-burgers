@@ -15,10 +15,9 @@ class Restaurant(models.Model):
         max_length=100,
         blank=True,
     )
-    contact_phone = models.CharField(
-        'контактный телефон',
-        max_length=50,
-        blank=True,
+    contact_phone = PhoneNumberField(
+        verbose_name='контактный телефон',
+        db_index=True
     )
 
     class Meta:
