@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-from .models import Product, OrderItems
+from .models import Product
 from .serializers import OrderSerializer
 
 
@@ -67,13 +67,5 @@ def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     created_order = serializer.save()
-
-    all_products = Product.objects.prefetch_related()
-    for product in serializer.validated_data['products']:
-        OrderItems.objects.create(
-            order=created_order,
-            product=all_products.get(id=product.get('product').id),
-            quantity=product.get('quantity'),
-            price=Product.objects.get(id=product['product'].id).price,
-        )
+    serializer = OrderSerializer(created_order)
     return Response(serializer.data)
