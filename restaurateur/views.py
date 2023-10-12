@@ -9,11 +9,17 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from geopy import distance
+from urllib.error import HTTPError
 import requests
 
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 from locations.models import Location
+
+
+class GeopositionError(TypeError):
+    def __init__(self, text):
+        self.txt = text
 
 
 class Login(forms.Form):
@@ -75,11 +81,39 @@ def fetch_coordinates(apikey, address):
     found_places = response.json()['response']['GeoObjectCollection']['featureMember']
 
     if not found_places:
-        return (0, 0)
+        raise GeopositionError('Uncorrect address')
 
     most_relevant = found_places[0]
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
     return lon, lat
+
+
+def get_coordinates(order_address):
+    try:
+        location = Location.objects.get(address=order_address)
+        lon = location.lon
+        lat = location.lat
+    except Location.DoesNotExist:
+        try:
+            lon, lat = fetch_coordinates(
+                settings.YANDEX_API_KEY,
+                order_address,
+            )
+        except KeyError:
+            lon, lat = None, None
+        except HTTPError:
+            lon, lat = None, None
+
+        Location.objects.get_or_create(
+            query_date=datetime.now(),
+            defaults={
+                'address': order_address,
+                'lon': lon,
+                'lat': lat,
+                }
+            )
+    order_coordinates = (lon, lat)
+    return order_coordinates
 
 
 def is_manager(user):
@@ -120,37 +154,9 @@ def view_orders(request):
     for order in orders:
         products = [item.product.id for item in order.order_items.select_related('product')]
         restaurants = RestaurantMenuItem.objects.get_restaurants(products)
-        try:
-            location = Location.objects.get(address=order.address)
-            order_coordinates = (location.lon, location.lat)
-        except Location.DoesNotExist:
-            lon, lat = fetch_coordinates(
-                settings.YANDEX_API_KEY,
-                order.address
-            )
-            location = Location.objects.create(
-                address=order.address,
-                lon=lon,
-                lat=lat,
-                query_date=datetime.now()
-            )
-            order_coordinates = (location.lon, location.lat)
+        order_coordinates = get_coordinates(order.address)
         for restaurant in restaurants:
-            try:
-                location = Location.objects.get(address=restaurant['restaurant__address'])
-                restaurant_coordinates = (location.lon, location.lat)
-            except Location.DoesNotExist:
-                lon, lat = fetch_coordinates(
-                    settings.YANDEX_API_KEY,
-                    restaurant['restaurant__address']
-                )
-                location = Location.objects.create(
-                    address=restaurant['restaurant__address'],
-                    lon=lon,
-                    lat=lat,
-                    query_date=datetime.now()
-                )
-                restaurant_coordinates = (location.lon, location.lat)
+            restaurant_coordinates = get_coordinates(restaurant['restaurant__address'])
             restaurant['coordinates'] = restaurant_coordinates
             try:
                 distance_to_order = distance.distance(
