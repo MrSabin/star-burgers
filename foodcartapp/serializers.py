@@ -11,7 +11,7 @@ class OrderitemsSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderitemsSerializer(many=True, allow_empty=False)
+    products = OrderitemsSerializer(many=True, allow_empty=False, write_only=True)
 
     class Meta:
         model = Order
@@ -21,7 +21,7 @@ class OrderSerializer(ModelSerializer):
             'firstname',
             'lastname',
             'phonenumber',
-            'products',
+            'products'
         ]
 
     def create(self, validated_data):
