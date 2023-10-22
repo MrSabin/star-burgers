@@ -99,9 +99,7 @@ def get_coordinates(order_address):
                 settings.YANDEX_API_KEY,
                 order_address,
             )
-        except KeyError:
-            lon, lat = None, None
-        except HTTPError:
+        except (KeyError, HTTPError):
             lon, lat = None, None
 
         Location.objects.get_or_create(
