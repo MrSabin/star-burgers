@@ -145,4 +145,4 @@ cython_debug/
 appdb.json
 setup.cfg
 .idea/
-./static/
+static/

@@ -147,7 +147,12 @@ Parcel будет следить за файлами в каталоге `bundle
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `ROLLBAR_TOKEN` - токен доступа с правами `post_server_item` [Rollbar](https://rollbar.com/).
+- `ROLLBAR_TOKEN` - токен доступа с правами `post_server_item` [Rollbar](https://rollbar.com/)
+- `DB_URL` - данные для подключения к БД Postgresql в формате `postgres://USER:PASSWORD@HOST:PORT/NAME`
+
+## Обновление сайта на сервере
+
+Быстро обновить сайт возможно с помощью скрипта. В качестве образца можно использовать `sb-deploy.sh` в корне репозитория, заменив путь к корневой директории сайта и названия сервисов на свои.
 
 ## Цели проекта
 
