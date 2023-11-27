@@ -15,7 +15,7 @@ python manage.py migrate --noinput
 systemctl restart sb-gunicorn.service
 systemctl reload nginx.service
 
-export $(xargs <.env)
+export $(xargs < ./star_burger/.env)
 
 last_commit=$(git rev-parse HEAD)
 
