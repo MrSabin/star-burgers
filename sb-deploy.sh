@@ -22,6 +22,6 @@ last_commit=$(git rev-parse HEAD)
 curl -H "X-Rollbar-Access-Token: ${ROLLBAR_TOKEN}" \
      -H "Content-Type: application/json" \
      -X POST 'https://api.rollbar.com/api/1/deploy' \
-     -d '{"environment": "production", "revision": "${last_commit}", "rollbar_username": "${ROLLBAR_USERNAME}", "status": "succeeded"}'
+     -d '{"environment": "production", "revision": "'${last_commit}'", "rollbar_username": "'${ROLLBAR_USERNAME}'", "status": "succeeded"}'
 
 echo Updated
