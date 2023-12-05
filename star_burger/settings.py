@@ -44,12 +44,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'star_burger.urls'
 
-ROLLBAR = {
-    'access_token': env.str('ROLLBAR_TOKEN'),
-    'environment': 'development' if DEBUG else 'production',
-    'code_version': '1.0',
-    'root': BASE_DIR,
-}
+ROLLBAR_TOGGLE = env.bool('ENABLE_ROLLBAR', False)
+if ROLLBAR_TOGGLE:
+    ROLLBAR = {
+        'access_token': env.str('ROLLBAR_TOKEN'),
+        'environment': env.str('ROLLBAR_ENV'),
+        'code_version': '1.0',
+        'root': BASE_DIR,
+    }
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
