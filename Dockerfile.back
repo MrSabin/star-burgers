@@ -16,5 +16,3 @@ COPY templates templates/
 
 RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
-
-CMD ["python", "-m", "gunicorn", "-w", "5", "-b", "127.0.0.1:8000", "star_burger.wsgi:application"]
