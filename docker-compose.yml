@@ -15,8 +15,8 @@ services:
   frontend:
     container_name: sb-frontend
     build:
-      context: ./
-      dockerfile: Dockerfile.front
+      context: ./frontend/
+      dockerfile: Dockerfile
     volumes:
       - bundles_volume:/opt/star-burgers/bundles/
 
