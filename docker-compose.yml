@@ -1,16 +1,11 @@
 services:
 
   database:
+    env_file: ./backend/star_burger/.env
     image: postgres:latest
     container_name: sb-postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - '5432'
-    env_file:
-      - ./backend/star_burger/.env
 
   frontend:
     container_name: sb-frontend
